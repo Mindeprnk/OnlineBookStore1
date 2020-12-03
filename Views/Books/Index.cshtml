@@ -1,0 +1,59 @@
+﻿@model IEnumerable<OnlineBookStore1.Models.Book>
+
+@{
+    ViewBag.Title = "Books";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Books</h2>
+<p>
+    @Html.ActionLink("New Book", "New", "Books", null, new { @class = "btn btn-primary" })
+</p>
+
+<table id="books" class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>Books</th>
+            <th>Genre</th>
+            <th>Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var book in Model)
+            {
+                <tr>
+                    <td>@Html.ActionLink(book.Name, "Edit", "Books", new { id = book.Id }, null)</td>
+                    <td>@book.Genre.Name</td>
+                    <td>
+                        <button data-book-id="@book.Id" class="btn btn-link js-delete">Delete</button>
+                    </td>
+               </tr>
+            }
+
+    </tbody>
+</table>
+@section scripts
+{
+    <script>
+        $(document).ready(function () {
+           var table= $("#books").DataTable();
+
+            $("#books ").on("click",".js-delete", function () {
+                var button = $(this);
+                if (confirm("Are you sure you want to delete the book?")) {
+
+                    $.ajax({
+                        url: "api/books/" + button.attr("data-book-id"),
+                        method: "DELETE",
+                        success: function () {
+                           // button.parents("tr").remove();
+                            table.row(button.parents("tr")).remove().draw();
+
+                        }
+                    })
+                }
+            });
+        });
+    </script>
+
+}
